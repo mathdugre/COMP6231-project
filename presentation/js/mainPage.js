@@ -1,3 +1,10 @@
+function newPost(){
+
+    document.getElementById("postForm").classList.remove("d-none");
+    document.getElementById("centerContent").innerHTML = "";
+
+}
+
 function viewPosts() {
 
 
@@ -25,4 +32,5 @@ function viewPosts() {
 
     http += '</div>';
     document.getElementById('centerContent').innerHTML = http;
+    document.getElementById("postForm").classList.add("d-none");
 }

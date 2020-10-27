@@ -29,6 +29,9 @@
         </button>
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
+                <a class="nav-link" onclick ="newPost()" href="#">New Post</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" onclick ="viewPosts()" href="#">View Posts</a>
             </li>
             <li class="nav-item">
@@ -48,7 +51,20 @@
     <div class="row centerRow justify-content-center">
         <div class="col-8">
 
-            <div id = "centerContent"></div>
+            <form id ="postForm" method="post" class="d-none">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" class="form-control" id="title"
+                           placeholder="Enter topic">
+                </div>
+                <div class="form-group ">
+                    <label for="message">Message</label>
+                    <textarea class="form-control" rows="5" id="message" placeholder="Enter Post"> </textarea>
+                </div>
+                <button type="submit" class="btn btn-dark">Post</button>
+            </form>
+
+            <div id="centerContent"></div>
 
         </div>
     </div>
