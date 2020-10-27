@@ -1,0 +1,37 @@
+Use cases:
+-A user will be able to create an account with their login, password
+-A user will be able to view a list of all files in the database
+-A user will be able to upload files to a database, and delete files which they uploaded
+-A user will be able to download files to their computer from the database
+-A user will be able to subscribe to other users
+-A user will be able to view published post they are subscribed to
+-A user will be able to publish posts to their subscribers
+-A user will be able to upvote and downvote posts
+-optional: recommendation system for most popular topics
+-optional: include first and last names
+
+Post:
+-Message title
+-Message
+-Associate files
+-Date and time 
+-UserID of poster
+-UserID of subscribers
+-optional: category
+
+Database functionality:
+-logging in, registering new account
+-publishing and subscribing
+-storing the files
+
+Virtual Machines and containers:
+-1 Azure virtual machine
+-N Docker containers, each storing a separate database
+
+Front end:
+-HTML/CSS/JS
+Back end:
+Python flask
+
+https://redis.io/topics/twitter-clone
+
