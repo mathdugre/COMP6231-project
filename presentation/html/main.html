@@ -5,7 +5,7 @@
     <title>Main Page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="../css/mainPage.css">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
             crossorigin="anonymous"></script>
@@ -17,21 +17,66 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
+
 <div class="container" style="">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
         <a class="navbar-brand" href="#">COVID-19 Research Forum</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <a class="nav-item nav-link" href="#">View Posts</a>
-                <a class="nav-item nav-link" href="#">Find Users</a>
-                <a class="nav-item nav-link" href="#">View Files</a>
-            </div>
-        </div>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">View Posts</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Find Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Find Files</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Welcome @username</a>
+            </li>
+        </ul>
     </nav>
 
+    <div class="row postsRow justify-content-center">
+        <div class="col-8">
+
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">@username: Post title</h5>
+                        <small>3 days ago</small>
+                    </div>
+                    <p class="mb-1">This is where the text post does</p>
+                    <small> Associated files</small>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">@username: Post title</h5>
+                        <small>3 days ago</small>
+                    </div>
+                    <p class="mb-1">This is where the text post does</p>
+                    <small> Associated files</small>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">@username: Post title</h5>
+                        <small>3 days ago</small>
+                    </div>
+                    <p class="mb-1">This is where the text post does</p>
+                    <small> Associated files</small>
+                </a>
+
+            </div>
+
+        </div>
+    </div>
 </div>
 </body>
 </html>
