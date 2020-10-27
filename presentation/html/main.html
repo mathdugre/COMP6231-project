@@ -22,28 +22,28 @@
 <div class="container" style="">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
-        <a class="navbar-brand" href="#">COVID-19 Research Forum</a>
+        <a class="navbar-brand" href="index.html">COVID-19 Research Forum</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
                 aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" onclick ="newPost()" href="#">New Post</a>
+                <a class="nav-link" onclick="newPost()" href="#">New Post</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" onclick ="viewPosts()" href="#">View Posts</a>
+                <a class="nav-link" onclick="viewPosts()" href="#">View Posts</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" onclick="viewUsers()" href="#">Find Users</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Find Files</a>
+                <a class="nav-link" onclick="viewFiles()" href="#">Find Files</a>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link" href="#">Welcome @username</a>
+                <div class="nav-link">Welcome @username</div>
             </li>
         </ul>
     </nav>
@@ -51,7 +51,7 @@
     <div class="row centerRow justify-content-center">
         <div class="col-8">
 
-            <form id ="postForm" method="post" class="d-none d-none">
+            <form id="postForm" method="post" class="d-none d-none">
                 <div class="form-group">
                     <label for="title">Title</label>
                     <input type="text" class="form-control" id="title"

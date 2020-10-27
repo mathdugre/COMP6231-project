@@ -9,10 +9,10 @@ function viewPosts() {
 
 
     var numPosts = 10;
-    var http = '<div class="list-group">';
+    var html = '<div class="list-group">';
 
     for (i = 0; i < numPosts; i++) {
-        http +=
+        html +=
             '       <div class="list-group-item flex-column align-items-start">\n' +
             '       <div class="d-flex w-100 justify-content-between">\n' +
             '           <h5 class="mb-1">@username: Post title</h5>\n' +
@@ -30,26 +30,26 @@ function viewPosts() {
 
     }
 
-    http += '</div>';
-    document.getElementById('centerContent').innerHTML = http;
+    html += '</div>';
+    document.getElementById('centerContent').innerHTML = html;
     document.getElementById("postForm").classList.add("d-none");
 }
 
 function viewUsers() {
 
-    var http = '<ul class="list-group">';
+    var html = '<ul class="list-group">';
 
     for(i = 0 ; i < 20 ; i++){
 
         if(i < 10) {
-            http +=
+            html +=
                 '   <li class="list-group-item d-flex justify-content-between align-items-center">\n' +
                 '       @Username\n' +
                 '       <button onclick="changeSubButton(this)" class ="btn btn-success">Subscribe</button>\n' +
                 '   </li>';
         } else {
 
-            http +=
+            html +=
                 '   <li class="list-group-item d-flex justify-content-between align-items-center">\n' +
                 '       @Username\n' +
                 '       <button onclick="changeSubButton(this)" class ="btn btn-danger">Unsubscribe</button>\n' +
@@ -57,8 +57,8 @@ function viewUsers() {
         }
     }
 
-    http += '</ul>'
-    document.getElementById('centerContent').innerHTML = http;
+    html += '</ul>'
+    document.getElementById('centerContent').innerHTML = html;
     document.getElementById("postForm").classList.add("d-none");
 }
 
@@ -73,5 +73,43 @@ function changeSubButton(source){
         source.classList.add("btn-danger");
         source.innerHTML = "Unsubscribe";
     }
+}
+
+function viewFiles() {
+
+    var html =
+        '<div class="row">\n' +
+        '   <div class="col-12 text-center">\n' +
+        '       <button class="btn btn-primary mb-5"> Upload file</button>\n' +
+        '   </div>\n' +
+        '</div>' +
+        '<ul class="list-group">';
+
+
+    for(i = 0 ; i < 20 ; i++){
+
+        if(i < 5) {
+            html +=
+                '<li class="list-group-item d-flex justify-content-between align-items-center"> File title\n' +
+                '<div>\n' +
+                '   <button class="btn btn-success">download</button>\n' +
+                '   <button class="btn btn-danger">delete</button>\n' +
+                '</div>\n' +
+                '</li>';
+        } else {
+            html +=
+                '<li class="list-group-item d-flex justify-content-between align-items-center"> File title\n' +
+                '<div>\n' +
+                '   <button class="btn btn-success">download</button>\n' +
+                '</div>\n' +
+                '</li>';
+        }
+    }
+
+
+    html += '</ul>';
+
+    document.getElementById('centerContent').innerHTML = html;
+    document.getElementById("postForm").classList.add("d-none");
 }
 
