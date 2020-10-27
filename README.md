@@ -1,1 +1,1 @@
-# COMP6231-project
+# COMP6231-DistributedSystems-project
