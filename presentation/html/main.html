@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/mainPage.css">
+    <script src="../js/mainPage.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
             crossorigin="anonymous"></script>
@@ -28,7 +29,7 @@
         </button>
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="#">View Posts</a>
+                <a class="nav-link" onclick ="viewPosts()" href="#">View Posts</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">Find Users</a>
@@ -44,36 +45,10 @@
         </ul>
     </nav>
 
-    <div class="row postsRow justify-content-center">
+    <div class="row centerRow justify-content-center">
         <div class="col-8">
 
-            <div class="list-group">
-                <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">@username: Post title</h5>
-                        <small>3 days ago</small>
-                    </div>
-                    <p class="mb-1">This is where the text post does</p>
-                    <small> Associated files</small>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">@username: Post title</h5>
-                        <small>3 days ago</small>
-                    </div>
-                    <p class="mb-1">This is where the text post does</p>
-                    <small> Associated files</small>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">@username: Post title</h5>
-                        <small>3 days ago</small>
-                    </div>
-                    <p class="mb-1">This is where the text post does</p>
-                    <small> Associated files</small>
-                </a>
-
-            </div>
+            <div id = "centerContent"></div>
 
         </div>
     </div>
