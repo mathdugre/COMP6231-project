@@ -1,0 +1,45 @@
+.container {
+}
+
+
+.row-top {
+    height: 200px;
+    width: 100%;
+    margin: auto;
+    margin-bottom: 100px;
+    margin-top: 10px;
+}
+
+.molecule {
+    display: block;
+    height: 200px;
+    width: auto;
+    margin: auto;
+}
+
+.row-mid {
+    margin: auto;
+}
+
+.col-8 {
+    padding-top: 10px;
+    padding-bottom: 40px;
+}
+
+.col-4 {
+    padding-top: 10px;
+    padding-bottom: 40px;
+    border-right: none;
+}
+
+.sidenav {
+    background-color: #cc3300;
+}
+
+.login-main-text {
+    height: 100%;
+}
+
+.login {
+
+}
