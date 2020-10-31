@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  auth:
+    build: 
+      context: ./services/auth
+    command: gunicorn --bind 0.0.0.0:5000 manage:app
+    ports:
+      - 5000:5000
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - user_db
+
+  user_db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.dev.db
+
+volumes:
+  postgres_data:

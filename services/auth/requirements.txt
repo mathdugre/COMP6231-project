@@ -1,0 +1,6 @@
+Flask
+flask_jwt_extended
+Flask-Migrate
+Flask-SQLAlchemy
+gunicorn
+psycopg2-binary
