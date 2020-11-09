@@ -1,5 +1,5 @@
 from werkzeug.security import check_password_hash
-from flask import jsonify, request
+from flask import jsonify, request, render_template
 from flask_jwt_extended import (
     create_access_token,
     jwt_required,
@@ -15,19 +15,26 @@ from app.models import User
 from app.jwt import jwt_blueprint
 
 
+@jwt_blueprint.route("/")
+def index():
+    return render_template("index.html")
+
+
 @jwt_blueprint.route("/auth/login", methods=["POST"])
 def login():
-    auth = request.authorization
-    if not auth or not auth.username or not auth.password:
-        return jsonify({"msg": "Missing credentials for login!"}), 401
+    #auth = request.authorization
+    # if not auth or not auth.username or not auth.password:
+    #     return jsonify({"msg": "Missing credentials for login!"}), 401
 
-    username = auth.username.lower()
+    username = request.form['username']
+    password = request.form['password']
+    # username = auth.username.lower()
     user = User.query.filter_by(username=username).first()
 
     if not user:
         return jsonify({"msg": "Provided username does not exist!"}), 401
 
-    if check_password_hash(user.password, auth.password):
+    if check_password_hash(user.password, password):
         identity = {
             "public_id": user.public_id,
             "username": username,
@@ -43,7 +50,6 @@ def login():
 
     else:
         return jsonify({"msg": "Invalid login information!"}), 401
-
 
 @jwt_blueprint.route("/auth/refresh", methods=["POST"])
 @jwt_refresh_token_required

@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="col-8 border border-dark rounded">
-            <form class="login" method="post" action="/auth/login" onsubmit="">
+            <form class="login" method="post" action="" onsubmit="">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" name="username" class="form-control" id="username"
@@ -44,10 +44,10 @@
                 </div>
                 <div class="row ">
                     <div class="col-6">
-                        <button type="submit" onclick=""  class="btn btn-dark">Submit</button>
+                        <button type="submit" onclick="javascript: form.action='/auth/login';"  class="btn btn-dark">Submit</button>
                     </div>
                     <div class="col-6  text-right">
-                        <button type="submit" onclick="" class="btn btn-secondary">Register</button>
+                        <button type="submit" onclick="javascript: form.action='/user';" class="btn btn-secondary">Register</button>
                     </div>
                 </div>
             </form>

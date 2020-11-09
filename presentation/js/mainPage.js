@@ -2,11 +2,9 @@ function newPost(){
 
     document.getElementById("postForm").classList.remove("d-none");
     document.getElementById("centerContent").innerHTML = "";
-
 }
 
 function viewPosts() {
-
 
     var numPosts = 10;
     var html = '<div class="list-group">';

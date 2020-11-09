@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/login.css">
+    <script src = "../js/login.js"> </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
             crossorigin="anonymous"></script>
@@ -31,7 +32,7 @@
             </div>
         </div>
         <div class="col-8 border border-dark rounded">
-            <form class="login" method="post" action="main.html">
+            <form class="login" method="post" action="../../services/auth/login" onsubmit="">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" class="form-control" id="username"
@@ -43,7 +44,7 @@
                 </div>
                 <div class="row ">
                     <div class="col-6">
-                        <button type="submit" class="btn btn-dark">Submit</button>
+                        <button type="submit" onclick=""  class="btn btn-dark">Submit</button>
                     </div>
                     <div class="col-6  text-right">
                         <button type="submit" onclick="" class="btn btn-secondary">Register</button>
