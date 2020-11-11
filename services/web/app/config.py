@@ -15,3 +15,4 @@ class Config(object):
     JWT_REFRESH_COOKIE_PATH = "/auth/refresh"
     JWT_COOKIE_CSRF_PROTECT = False
     JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"]
+

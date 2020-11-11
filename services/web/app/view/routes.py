@@ -10,6 +10,7 @@ from flask_jwt_extended import (
     set_refresh_cookies,
     unset_jwt_cookies,
 )
+from app import redis_client
 
 
 @view_blueprint.route("/", methods=["GET"])

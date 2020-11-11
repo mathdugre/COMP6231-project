@@ -1,5 +1,5 @@
 from werkzeug.security import check_password_hash
-from flask import jsonify, request, render_template
+from flask import jsonify, request, render_template, redirect, make_response
 from flask_jwt_extended import (
     create_access_token,
     jwt_required,
@@ -22,13 +22,41 @@ def index():
 
 @jwt_blueprint.route("/auth/login", methods=["POST"])
 def login():
-    #auth = request.authorization
-    # if not auth or not auth.username or not auth.password:
-    #     return jsonify({"msg": "Missing credentials for login!"}), 401
+    auth = request.authorization
+    if not auth or not auth.username or not auth.password:
+        return jsonify({"msg": "Missing credentials for login!"}), 401
 
+    # username = request.form['username']
+    # password = request.form['password']
+    username = auth.username.lower()
+    user = User.query.filter_by(username=username).first()
+
+    if not user:
+        return jsonify({"msg": "Provided username does not exist!"}), 401
+
+    if check_password_hash(user.password, auth.password):
+        identity = {
+            "public_id": user.public_id,
+            "username": username,
+            "admin": user.admin,
+        }
+        access_token = create_access_token(identity=identity)
+        refresh_token = create_refresh_token(identity=identity)
+
+        resp = jsonify({"login": True})
+        set_access_cookies(resp, access_token)
+        set_refresh_cookies(resp, refresh_token)
+        return resp
+
+    else:
+        return jsonify({"msg": "Invalid login information!"}), 401
+
+
+@jwt_blueprint.route("/auth/loginFrontEnd", methods=["POST"])
+def loginFrontEnd():
     username = request.form['username']
     password = request.form['password']
-    # username = auth.username.lower()
+
     user = User.query.filter_by(username=username).first()
 
     if not user:
@@ -43,13 +71,14 @@ def login():
         access_token = create_access_token(identity=identity)
         refresh_token = create_refresh_token(identity=identity)
 
-        resp = jsonify({"login": True})
+        resp = make_response(redirect("http://localhost:5005", 301))
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
-        return resp, 200
+        return resp
 
     else:
         return jsonify({"msg": "Invalid login information!"}), 401
+
 
 @jwt_blueprint.route("/auth/refresh", methods=["POST"])
 @jwt_refresh_token_required

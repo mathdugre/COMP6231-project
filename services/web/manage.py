@@ -1,7 +1,7 @@
 from flask.cli import FlaskGroup
-from project import app
+from app import app
 
 cli = FlaskGroup(app)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5005)
+    app.run(host='0.0.0.0', port=5005)

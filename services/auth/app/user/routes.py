@@ -55,13 +55,35 @@ def get_one_user(public_id):
 
 @user_blueprint.route("/user", methods=["POST"])
 def create_user():
+    data = request.get_json()
 
+    hashed_password = generate_password_hash(data["password"], method="sha256")
+
+    new_user = User(
+        public_id=str(uuid.uuid4()),
+        username=data["username"].lower(),
+        email=data["email"],
+        password=hashed_password,
+        admin=False,
+    )
+
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+    except Exception:
+        return jsonify({"msg": "Failed to create user!"})
+
+    return jsonify({"msg": "User created!"}), 200
+
+
+@user_blueprint.route("/userFrontEnd", methods=["POST"])
+def create_user_front_end():
     hashed_password = generate_password_hash(request.form["password"], method="sha256")
 
     new_user = User(
         public_id=str(uuid.uuid4()),
         username=request.form["username"].lower(),
-        #email=data["email"],
+        # email=data["email"],
         password=hashed_password,
         admin=False,
     )
