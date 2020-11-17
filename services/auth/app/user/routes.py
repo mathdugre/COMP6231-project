@@ -1,5 +1,6 @@
 from functools import wraps
 import uuid
+import requests
 
 from flask import jsonify, request
 from flask_jwt_extended.utils import get_jwt_identity
@@ -73,6 +74,8 @@ def create_user():
     except Exception:
         return jsonify({"msg": "Failed to create user!"})
 
+    requests.post('http://web:5005/addUser', json={"username": data["username"].lower()})
+
     return jsonify({"msg": "User created!"}), 200
 
 
@@ -93,6 +96,8 @@ def create_user_front_end():
         db.session.commit()
     except Exception:
         return jsonify({"msg": "Failed to create user!"})
+
+    requests.post('http://web:5005/addUser', json={"username": request.form["username"].lower()})
 
     return jsonify({"msg": "User created!"}), 200
 

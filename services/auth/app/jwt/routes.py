@@ -26,8 +26,6 @@ def login():
     if not auth or not auth.username or not auth.password:
         return jsonify({"msg": "Missing credentials for login!"}), 401
 
-    # username = request.form['username']
-    # password = request.form['password']
     username = auth.username.lower()
     user = User.query.filter_by(username=username).first()
 

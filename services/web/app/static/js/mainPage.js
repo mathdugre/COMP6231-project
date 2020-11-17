@@ -1,4 +1,4 @@
-function newPost(){
+function newPost() {
 
     document.getElementById("postForm").classList.remove("d-none");
     document.getElementById("centerContent").innerHTML = "";
@@ -35,14 +35,23 @@ function viewPosts() {
 
 function viewUsers() {
 
+    let allUsers = getListOfUsers();
+    allUsers.then(function(data){
+        console.log(data);
+        generateViewUsersHTML(data['users'], data['username']);
+    })
+}
+
+function generateViewUsersHTML(users, username) {
+
     var html = '<ul class="list-group">';
 
-    for(i = 0 ; i < 20 ; i++){
+    for(i = 0 ; i < users.length ; i++){
 
         if(i < 10) {
             html +=
                 '   <li class="list-group-item d-flex justify-content-between align-items-center">\n' +
-                '       @Username\n' +
+                '       @' + users[i] + '\n' +
                 '       <button onclick="changeSubButton(this)" class ="btn btn-success">Subscribe</button>\n' +
                 '   </li>';
         } else {
@@ -60,9 +69,47 @@ function viewUsers() {
     document.getElementById("postForm").classList.add("d-none");
 }
 
-function changeSubButton(source){
+function getListOfUsers() {
 
-    if(source.classList.contains("btn-danger")) {
+    return fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'getallusers', {
+        method: "GET",
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
+        })
+    }).then(function (response) {
+        if (response.status !== 200) {
+            console.log('Looks like there was a problem. Status code: ${response.status}');
+            return;
+        }
+        return response.json();
+    }).catch(function (error) {
+        console.log("Fetch error: " + error);
+    });
+}
+
+function getListOfUsers() {
+
+    return fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'getallusers', {
+        method: "GET",
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
+        })
+    }).then(function (response) {
+        if (response.status !== 200) {
+            console.log('Looks like there was a problem. Status code: ${response.status}');
+            return;
+        }
+        return response.json();
+    }).catch(function (error) {
+        console.log("Fetch error: " + error);
+    });
+}
+
+function changeSubButton(source) {
+
+    if (source.classList.contains("btn-danger")) {
         source.classList.remove("btn-danger");
         source.classList.add("btn-success");
         source.innerHTML = "Subscribe";
@@ -84,9 +131,9 @@ function viewFiles() {
         '<ul class="list-group">';
 
 
-    for(i = 0 ; i < 20 ; i++){
+    for (i = 0; i < 20; i++) {
 
-        if(i < 5) {
+        if (i < 5) {
             html +=
                 '<li class="list-group-item d-flex justify-content-between align-items-center"> File title\n' +
                 '<div>\n' +
