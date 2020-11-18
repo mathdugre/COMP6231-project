@@ -19,7 +19,7 @@ redis_sadd_user_followers = ":followers"
 
 
 def userExists(username):
-    return redis_client.hexists(redis_sadd_users, username)
+    return redis_client.sismember(redis_sadd_users, username)
 
 
 def decodeRedisResp(response):
@@ -49,7 +49,7 @@ def addUser():
 def follow():
     data = request.get_json()
     user_request = data['requester']
-    user_follow = data['follower']
+    user_follow = data['tofollow']
     jwt_username = get_jwt_identity()['username']
 
     if not (userExists(user_follow) and userExists(user_request)):
@@ -67,10 +67,40 @@ def follow():
         return jsonify({"msg": "unable to complete request. Either user already follows or internal error"}), 403
 
 
+@redis_commands_blueprint.route("/unfollow", methods=["POST"])
+@jwt_required
+def unfollow():
+
+    data = request.get_json()
+    user_request = data['requester']
+    user_unfollow = data['tounfollow']
+    jwt_username = get_jwt_identity()['username']
+
+    if not (userExists(user_unfollow) and userExists(user_request)):
+        return jsonify({"msg:": "invalid, user(s) do not exist"}), 404
+
+    if user_request != jwt_username:
+        return jsonify({"msg:": "invalid, jwt token not for requesting user"}), 401
+
+    if user_request == user_unfollow:
+        return jsonify({"msg:": "invalid, you cannot follow yourself"}), 401
+
+    if unfollow(user_request, user_unfollow):
+        return jsonify({"msg": user_request + " now unfollows " + user_unfollow}), 200
+    else:
+        return jsonify({"msg": "unable to complete request. Either user already does not follow or internal error"}), 403
+
+
 def follow(user_request, user_follow):
     return (
         redis_client.sadd(user_request + redis_sadd_user_follows, user_follow) and
         redis_client.sadd(user_follow + redis_sadd_user_followers, user_request) == 1)
+
+
+def unfollow(user_request, user_unfollow):
+    return (
+        redis_client.srem(user_request + redis_sadd_user_follows, user_unfollow) and
+        redis_client.srem(user_unfollow + redis_sadd_user_followers, user_request) == 1)
 
 
 @redis_commands_blueprint.route("/getallusers", methods=["GET"])
@@ -80,4 +110,17 @@ def getAllUsers():
     return jsonify(users=decodeRedisResp(userList), username=get_jwt_identity()['username'])
 
 
+@redis_commands_blueprint.route("/getwhouserfollows", methods=["GET"])
+@jwt_required
+def getWhoUserFollows():
+    username = request.args.get('username')
+    jwt_username = get_jwt_identity()['username']
+
+    if not userExists(username):
+        return jsonify({"msg:": "invalid, user does not exist"}), 404
+    if username != jwt_username:
+        return jsonify({"msg:": "invalid, jwt token not for requesting user"}), 401
+
+    userList = redis_client.smembers(username+redis_sadd_user_follows)
+    return jsonify(users=decodeRedisResp(userList)), 200
 

@@ -36,30 +36,35 @@ function viewPosts() {
 function viewUsers() {
 
     let allUsers = getListOfUsers();
-    allUsers.then(function(data){
-        console.log(data);
-        generateViewUsersHTML(data['users'], data['username']);
+
+    allUsers.then(function (data) {
+        //console.log(data);
+        getWhoUserFollows(data['username']).then(function (data2) {
+            generateViewUsersHTML(new Set(data['users']), data['username'], new Set(data2['users']));
+        })
     })
 }
 
-function generateViewUsersHTML(users, username) {
+function generateViewUsersHTML(users, theUser, whoUserFollows) {
 
     var html = '<ul class="list-group">';
 
-    for(i = 0 ; i < users.length ; i++){
+    for (let user of users) {
 
-        if(i < 10) {
+        if(user === theUser) continue;
+
+        if (!whoUserFollows.has(user)) {
             html +=
                 '   <li class="list-group-item d-flex justify-content-between align-items-center">\n' +
-                '       @' + users[i] + '\n' +
-                '       <button onclick="changeSubButton(this)" class ="btn btn-success">Subscribe</button>\n' +
+                '       @' + user + '\n' +
+                '       <button onclick="changeSubButton(this,\'' + theUser + "\',\'" + user + '\')" class ="btn btn-success">Subscribe</button>\n' +
                 '   </li>';
         } else {
 
             html +=
                 '   <li class="list-group-item d-flex justify-content-between align-items-center">\n' +
-                '       @Username\n' +
-                '       <button onclick="changeSubButton(this)" class ="btn btn-danger">Unsubscribe</button>\n' +
+                '       @' + user + '\n' +
+                '       <button onclick="changeSubButton(this,\'' + theUser + "\',\'" + user + '\')" class ="btn btn-danger">Unsubscribe</button>\n' +
                 '   </li>';
         }
     }
@@ -88,9 +93,10 @@ function getListOfUsers() {
     });
 }
 
-function getListOfUsers() {
+function getWhoUserFollows(username) {
 
-    return fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'getallusers', {
+    let urlStr = window.location.href.substr(0, window.location.href.indexOf('#')) + 'getwhouserfollows?username=' + username;
+    return fetch(urlStr, {
         method: "GET",
         cache: "no-cache",
         headers: new Headers({
@@ -107,16 +113,62 @@ function getListOfUsers() {
     });
 }
 
-function changeSubButton(source) {
+function followOrUnfollow(requester, target, willFollow) {
+
+    let urlStr;
+    let jsonBody;
+
+    if (willFollow) {
+        urlStr = window.location.href.substr(0, window.location.href.indexOf('#')) + 'follow';
+        jsonBody = JSON.stringify({
+            requester: requester,
+            tofollow: target
+        })
+    } else {
+        urlStr = window.location.href.substr(0, window.location.href.indexOf('#')) + 'unfollow';
+        jsonBody = JSON.stringify({
+            requester: requester,
+            tounfollow: target
+        })
+    }
+
+    return fetch(urlStr, {
+        method: "POST",
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
+        }),
+        body: jsonBody
+    }).then(function (response) {
+        if (response.status !== 200) {
+            console.log('Looks like there was a problem. Status code: ${response.status}');
+        }
+        return response.status;
+    }).catch(function (error) {
+        console.log("Fetch error: " + error);
+    });
+}
+
+function changeSubButton(source, requester, target) {
 
     if (source.classList.contains("btn-danger")) {
-        source.classList.remove("btn-danger");
-        source.classList.add("btn-success");
-        source.innerHTML = "Subscribe";
+
+        followOrUnfollow(requester, target, false).then(function (httpResp) {
+            if (httpResp === 200) {
+                source.classList.remove("btn-danger");
+                source.classList.add("btn-success");
+                source.innerHTML = "Subscribe";
+            }
+        });
+
     } else {
-        source.classList.remove("btn-success");
-        source.classList.add("btn-danger");
-        source.innerHTML = "Unsubscribe";
+        followOrUnfollow(requester, target, true).then(function (httpResp) {
+            if (httpResp === 200) {
+                source.classList.remove("btn-success");
+                source.classList.add("btn-danger");
+                source.innerHTML = "Unsubscribe";
+            }
+        });
     }
 }
 
