@@ -6,31 +6,60 @@ function newPost() {
 
 function viewPosts() {
 
-    var numPosts = 10;
-    var html = '<div class="list-group">';
+    posts = getUserPosts();
+    posts.then(function (userposts) {
+        let numPosts = userposts.length
+        let html = '<div class="list-group">';
+        for (let i = 0; i < numPosts; i = i + 4) {
 
-    for (i = 0; i < numPosts; i++) {
-        html +=
-            '       <div class="list-group-item flex-column align-items-start">\n' +
-            '       <div class="d-flex w-100 justify-content-between">\n' +
-            '           <h5 class="mb-1">@username: Post title</h5>\n' +
-            '           <small>45 points</small>\n' +
-            '       </div>\n' +
-            '       <div class="d-flex w-100 justify-content-between">\n' +
-            '           <p class="mb-1">This is where the text post does</p>\n' +
-            '           <div>' +
-            '               <div class="btn btn-success"> /\\ </div>' +
-            '               <div class="btn btn-danger"> \\/ </div>' +
-            '           </div>' +
-            '        </div>' +
-            '       <small> 3 days ago. Associated files</small>\n' +
-            '       </div>';
+            let username = "@" + userposts[i+3] + ": ";
+            let message = userposts[i+1];
+            let title = userposts[i+2] ;
+            let timeInSec = userposts[i];
+            let time = new Date(0); // The 0 there is the key, which sets the date to the epoch
+            time.setUTCSeconds(timeInSec);
 
-    }
+            html +=
+                '       <div class="list-group-item flex-column align-items-start">\n' +
+                '       <div class="d-flex w-100 justify-content-between">\n' +
+                '           <h5 class="mb-1">'+ username + title +'</h5>\n' +
+                '           <small>45 points</small>\n' +
+                '       </div>\n' +
+                '       <div class="d-flex w-100 justify-content-between">\n' +
+                '           <p class="mb-1 w-75">'+ message + '</p>\n' +
+                '           <div>' +
+                '               <div class="btn btn-success"> /\\ </div>' +
+                '               <div class="btn btn-danger"> \\/ </div>' +
+                '           </div>' +
+                '        </div>' +
+                '       <small> '+ time + '. Associated files</small>\n' +
+                '       </div>';
 
-    html += '</div>';
-    document.getElementById('centerContent').innerHTML = html;
-    document.getElementById("postForm").classList.add("d-none");
+        }
+        html += '</div>';
+        document.getElementById('centerContent').innerHTML = html;
+        document.getElementById("postForm").classList.add("d-none");
+
+    });
+}
+
+function getUserPosts() {
+
+    return fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'getposts', {
+        method: "GET",
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
+        })
+    }).then(function (response) {
+        if (response.status !== 200) {
+            console.log('Looks like there was a problem. Status code: ${response.status}');
+            return;
+        }
+        return response.json();
+    }).catch(function (error) {
+        console.log("Fetch error: " + error);
+    });
 }
 
 function viewUsers() {
@@ -51,7 +80,7 @@ function generateViewUsersHTML(users, theUser, whoUserFollows) {
 
     for (let user of users) {
 
-        if(user === theUser) continue;
+        if (user === theUser) continue;
 
         if (!whoUserFollows.has(user)) {
             html +=
