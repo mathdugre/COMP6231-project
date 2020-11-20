@@ -203,7 +203,6 @@ function viewFiles() {
         }
     }
 
-
     html += '</ul>';
 
     document.getElementById('centerContent').innerHTML = html;
