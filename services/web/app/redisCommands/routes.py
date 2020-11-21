@@ -22,21 +22,26 @@ from flask_jwt_extended import (
 #         self.date = date
 
 # set of users
-redis_sadd_users = "users"
+redis_set_users = "users"
 # set of who user follows e.g. user1:follows
-redis_sadd_user_follows = ":follows"
+redis_set_user_follows = ":follows"
 # set of followers, e.g. user1:followers
-redis_sadd_user_followers = ":followers"
+redis_set_user_followers = ":followers"
 # key value of current post ID, is incremented after each post
 redis_curr_post_key = "currPost"
 # user posts, e.g. user1:posts
 redis_list_user_posts = ":posts"
 # list of post information, e.g. post:10
 redis_list_post = "post:"
-
+# list of file information: data, user_uploader
+redis_list_file = "file:"
+# set of user files
+redis_set_user_files = ":files"
+# set of filenames which exist
+redis_set_files = "filenames"
 
 def userExists(username):
-    return redis_client.sismember(redis_sadd_users, username)
+    return redis_client.sismember(redis_set_users, username)
 
 
 def decodeRedisResp(response):
@@ -52,10 +57,10 @@ def addUser():
     data = request.get_json()
     username = data['username']
 
-    if redis_client.sismember(redis_sadd_users, username):
+    if redis_client.sismember(redis_set_users, username):
         return jsonify({"msg:": "user already exists"}), 409
 
-    redis_client.sadd(redis_sadd_users, username)
+    redis_client.sadd(redis_set_users, username)
 
     return jsonify({"msg:": "user added"}), 200
 
@@ -109,20 +114,20 @@ def unfollow():
 
 def follow_user(user_request, user_follow):
     return (
-            redis_client.sadd(user_request + redis_sadd_user_follows, user_follow) and
-            redis_client.sadd(user_follow + redis_sadd_user_followers, user_request) == 1)
+            redis_client.sadd(user_request + redis_set_user_follows, user_follow) and
+            redis_client.sadd(user_follow + redis_set_user_followers, user_request) == 1)
 
 
 def unfollow_user(user_request, user_unfollow):
     return (
-            redis_client.srem(user_request + redis_sadd_user_follows, user_unfollow) and
-            redis_client.srem(user_unfollow + redis_sadd_user_followers, user_request) == 1)
+            redis_client.srem(user_request + redis_set_user_follows, user_unfollow) and
+            redis_client.srem(user_unfollow + redis_set_user_followers, user_request) == 1)
 
 
 @redis_commands_blueprint.route("/getallusers", methods=["GET"])
 @jwt_required
 def getAllUsers():
-    userList = redis_client.smembers(redis_sadd_users)
+    userList = redis_client.smembers(redis_set_users)
     return jsonify(users=decodeRedisResp(userList), username=get_jwt_identity()['username'])
 
 
@@ -137,7 +142,7 @@ def getWhoUserFollows():
     if username != jwt_username:
         return jsonify({"msg:": "invalid, jwt token not for requesting user"}), 401
 
-    userList = redis_client.smembers(username + redis_sadd_user_follows)
+    userList = redis_client.smembers(username + redis_set_user_follows)
     return jsonify(users=decodeRedisResp(userList)), 200
 
 
@@ -164,7 +169,7 @@ def newPost():
     redis_client.lpush(redis_list_post + str(postID), username, topic, message, currtime)
 
     # push post to followers
-    followers = redis_client.smembers(username + redis_sadd_user_followers)
+    followers = redis_client.smembers(username + redis_set_user_followers)
     followers = decodeRedisResp(followers)
     for follower in followers:
         redis_client.lpush(follower + redis_list_user_posts, postID)
@@ -188,3 +193,37 @@ def getPosts():
             posts.append(post_elem)
 
     return jsonify(posts), 200
+
+
+@redis_commands_blueprint.route("/upload", methods=["POST"])
+@jwt_required
+def upload():
+    file = request.files['fileUpload']
+    data = file.read()
+    file_name = file.filename
+    username = get_jwt_identity()['username']
+
+    if file_name == "":
+        return jsonify({"msg": "file name is empty"}), 400
+
+    if redis_client.exists(redis_list_file + file_name):
+        return jsonify({"msg": "file with same name already exists"}), 400
+
+    redis_client.lpush(redis_list_file + file_name, data, username)
+    redis_client.sadd(redis_set_files, file_name)
+    redis_client.sadd(username+redis_set_user_files, file_name)
+
+    return jsonify({"msg": "uploaded " + file_name + " successfully"}), 200
+
+
+@redis_commands_blueprint.route("/getfilenames", methods=["GET"])
+@jwt_required
+def getfiles():
+    username = get_jwt_identity()['username']
+
+    file_names = redis_client.smembers(redis_set_files)
+    user_files = redis_client.smembers(username + redis_set_user_files)
+    file_names = decodeRedisResp(file_names)
+    user_files = decodeRedisResp(user_files)
+
+    return jsonify({"allFiles": file_names, "userFiles": user_files})
