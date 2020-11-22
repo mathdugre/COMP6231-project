@@ -220,20 +220,23 @@ function viewFiles() {
         '<ul class="list-group">';
 
     filenames.then(function (files) {
-        //console.log(files);
         let allFiles = files['allFiles'];
         let userFiles = new Set(files['userFiles']);
 
         for (let fileName of userFiles) {
             html +=
                 '<li class="list-group-item d-flex justify-content-between align-items-center">' +
-                '<div class = "w-75">'
-                + fileName + '' +
-                '</div>' +
-                '<div>' +
-                '   <button class="btn btn-success">download</button>' +
-                '   <button class="btn btn-danger">delete</button>' +
-                '</div>' +
+                '   <div class = "w-75">' +
+                        fileName + '' +
+                '   </div>' +
+                '   <div>' +
+                '       <form action="http://localhost:5005/download" method="get">' +
+                '           <input type ="hidden" name="filename" value="' + fileName + '">' +
+                '           <button type="submit" class="btn btn-success">download</button>' +
+                           '<button type="submit" formaction="http://localhost:5005/deletefile" class="btn btn-danger ml-1">delete</button>' +
+                '       </form>' +
+
+                '   </div>' +
                 '</li>';
         }
 
@@ -273,5 +276,19 @@ function getFileNames() {
     }).catch(function (error) {
         console.log("Fetch error: " + error);
     });
+}
 
+function downloadFile(fileName){
+        return fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'download?filename=' + fileName, {
+        method: "GET",
+        cache: "no-cache",
+    }).then(function (response) {
+        if (response.status !== 200) {
+            console.log('Looks like there was a problem. Status code: ${response.status}');
+            return;
+        }
+        return response.json();
+    }).catch(function (error) {
+        console.log("Fetch error: " + error);
+    });
 }

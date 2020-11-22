@@ -1,4 +1,5 @@
-from flask import jsonify, request, render_template
+from io import BytesIO
+from flask import jsonify, request, send_file
 from app import redis_client
 from app.redisCommands import redis_commands_blueprint  # noqa: E402, F401
 import time
@@ -33,7 +34,7 @@ redis_curr_post_key = "currPost"
 redis_list_user_posts = ":posts"
 # list of post information, e.g. post:10
 redis_list_post = "post:"
-# list of file information: data, user_uploader
+# list of file information: user_uploader, data
 redis_list_file = "file:"
 # set of user files
 redis_set_user_files = ":files"
@@ -227,3 +228,38 @@ def getfiles():
     user_files = decodeRedisResp(user_files)
 
     return jsonify({"allFiles": file_names, "userFiles": user_files})
+
+
+@redis_commands_blueprint.route("/download", methods=["GET"])
+@jwt_required
+def download():
+    file_name = request.args.get('filename')
+
+    if not redis_client.sismember(redis_set_files, file_name):
+        return jsonify({"msg": "file does not exist"}), 400
+
+    file_data = redis_client.lindex(redis_list_file + file_name, 1)
+
+    return send_file(BytesIO(file_data), attachment_filename=file_name, as_attachment=True), 200
+
+
+@redis_commands_blueprint.route("/deletefile", methods=["GET"])
+@jwt_required
+def deleteFile():
+    file_name = request.args.get('filename')
+    username = get_jwt_identity()['username']
+
+    if not redis_client.sismember(redis_set_files, file_name):
+        return jsonify({"msg": "file does not exist"}), 400
+
+    file_owner = redis_client.lindex(redis_list_file+file_name, 0).decode()
+
+    if username != file_owner:
+        return jsonify({"msg": "file does not belong to user"}), 400
+
+    redis_client.delete(redis_list_file + file_name)
+    redis_client.srem(username+redis_set_user_files, file_name)
+    redis_client.srem(redis_set_files, file_name)
+
+    return jsonify({"msg": file_name + " deleted"}), 200
+
