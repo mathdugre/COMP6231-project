@@ -3,16 +3,15 @@
 
 
 .row-top {
-    height: 200px;
-    width: 100%;
+
     margin: auto;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
     margin-top: 10px;
 }
 
-.molecule {
+.connect-img {
     display: block;
-    height: 200px;
+    height: 700px;
     width: auto;
     margin: auto;
 }

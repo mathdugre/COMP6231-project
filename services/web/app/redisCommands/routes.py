@@ -41,6 +41,7 @@ redis_set_user_files = ":files"
 # set of filenames which exist
 redis_set_files = "filenames"
 
+
 def userExists(username):
     return redis_client.sismember(redis_set_users, username)
 
