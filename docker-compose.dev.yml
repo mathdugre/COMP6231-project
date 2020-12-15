@@ -1,5 +1,15 @@
 version: "3.8"
 
+redis-image:
+ &default-image
+ publicisworldwide/redis-cluster
+redis-restart:
+ &default-restart
+ always
+redis-netmode:
+ &default-netmode
+ host
+
 services:
   auth:
     build: 
@@ -32,8 +42,77 @@ services:
     env_file:
       - ./.env2.dev
 
-  redis:
-    image: "redis:alpine"
+ redis1:
+  image: *default-image
+  #network_mode: *default-netmode
+  restart: *default-restart
+  volumes:
+  - ./data/redis/7001/data:/data
+  environment:
+  - REDIS_PORT=7001
+  ports:
+   - '7001:7001'
+   - '17001:17001'
+
+ redis2:
+  image: *default-image
+  #network_mode: *default-netmode
+  restart: *default-restart
+  volumes:
+  - ./data/redis/7002/data:/data
+  environment:
+  - REDIS_PORT=7002
+  ports:
+     - '7002:7002'
+     - '17002:17002'
+
+ redis3:
+  image: *default-image
+  #network_mode: *default-netmode
+  restart: *default-restart
+  volumes:
+  - ./data/redis/7003/data:/data
+  environment:
+  - REDIS_PORT=7003
+  ports:
+   - '7003:7003'
+   - '17003:17003'
+
+ redis4:
+  image: *default-image
+  #network_mode: *default-netmode
+  restart: *default-restart
+  volumes:
+  - ./data/redis/7004/data:/data
+  environment:
+  - REDIS_PORT=7004
+  ports:
+   - '7004:7004'
+   - '17004:17004'
+
+ redis5:
+  image: *default-image
+  #network_mode: *default-netmode
+  restart: *default-restart
+  volumes:
+  - ./data/redis/7005/data:/data
+  environment:
+  - REDIS_PORT=7005
+  ports:
+   - '7005:7005'
+   - '17005:17005'
+
+ redis6:
+  image: *default-image
+  #network_mode: *default-netmode
+  restart: *default-restart
+  volumes:
+  - ./data/redis/7006/data:/data
+  environment:
+  - REDIS_PORT=7006
+  ports:
+   - '7006:7006'
+   - '17006:17006'
 
 volumes:
   postgres_data:
