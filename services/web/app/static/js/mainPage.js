@@ -3,7 +3,7 @@ function newPostView() {
     document.getElementById("centerContent").innerHTML = "";
 }
 
-function newPost(){
+function newPost() {
 
     let formData = new FormData();
     formData.append('title', document.getElementById("title").value);
@@ -17,7 +17,7 @@ function newPost(){
             console.log('Looks like there was a problem. Status code: ${response.status}');
         }
         return response.json();
-    }).then(function(json){
+    }).then(function (json) {
         alert("post created: " + JSON.stringify(json));
     }).catch(function (error) {
         console.log("Fetch error: " + error);
@@ -39,10 +39,10 @@ function viewPosts() {
             let time = new Date(0); // The 0 there is the key, which sets the date to the epoch
             time.setUTCSeconds(timeInSec);
 
-            html +=`
+            html += `
                        <div class="list-group-item flex-column align-items-start">
                        <div class="d-flex w-100 justify-content-between">
-                           <h5 class="mb-1"> `+ username + title + `</h5>
+                           <h5 class="mb-1"> ` + username + title + `</h5>
                            <small>45 points</small>
                        </div> 
                        <div class="d-flex w-100 justify-content-between"> 
@@ -98,6 +98,15 @@ function generateViewUsersHTML(users, theUser, whoUserFollows) {
 
     var html = '<ul class="list-group">';
 
+    for (let user of whoUserFollows) {
+
+            html +=
+                '   <li class="list-group-item d-flex justify-content-between align-items-center">\n' +
+                '       @' + user + '\n' +
+                '       <button onclick="changeSubButton(this,\'' + theUser + "\',\'" + user + '\')" class ="btn btn-danger">Unsubscribe</button>\n' +
+                '   </li>';
+    }
+
     for (let user of users) {
 
         if (user === theUser) continue;
@@ -107,13 +116,6 @@ function generateViewUsersHTML(users, theUser, whoUserFollows) {
                 '   <li class="list-group-item d-flex justify-content-between align-items-center">\n' +
                 '       @' + user + '\n' +
                 '       <button onclick="changeSubButton(this,\'' + theUser + "\',\'" + user + '\')" class ="btn btn-success">Subscribe</button>\n' +
-                '   </li>';
-        } else {
-
-            html +=
-                '   <li class="list-group-item d-flex justify-content-between align-items-center">\n' +
-                '       @' + user + '\n' +
-                '       <button onclick="changeSubButton(this,\'' + theUser + "\',\'" + user + '\')" class ="btn btn-danger">Unsubscribe</button>\n' +
                 '   </li>';
         }
     }
@@ -247,13 +249,13 @@ function viewFiles() {
             html +=
                 '<li class="list-group-item d-flex justify-content-between align-items-center">' +
                 '   <div class = "w-75">' +
-                        fileName + '' +
+                fileName + '' +
                 '   </div>' +
                 '   <div>' +
                 '       <form action="http://localhost:5005/download" method="get">' +
                 '           <input type ="hidden" name="filename" value="' + fileName + '">' +
                 '           <button type="submit" class="btn btn-success">download</button>' +
-                           '<button type="submit" formaction="http://localhost:5005/deletefile" class="btn btn-danger ml-1">delete</button>' +
+                '<button type="submit" formaction="http://localhost:5005/deletefile" class="btn btn-danger ml-1">delete</button>' +
                 '       </form>' +
 
                 '   </div>' +
@@ -298,7 +300,7 @@ function getFileNames() {
     });
 }
 
-function uploadFile(){
+function uploadFile() {
 
     const file = document.getElementById('fileUpload').files[0];
     let formData = new FormData();
@@ -313,7 +315,7 @@ function uploadFile(){
             console.log('Looks like there was a problem. Status code: ${response.status}');
         }
         return response.json();
-    }).then(function (json){
+    }).then(function (json) {
         alert(JSON.stringify(json));
         viewFiles();
     }).catch(function (error) {
@@ -322,8 +324,8 @@ function uploadFile(){
 
 }
 
-function downloadFile(fileName){
-        return fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'download?filename=' + fileName, {
+function downloadFile(fileName) {
+    return fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'download?filename=' + fileName, {
         method: "GET",
         cache: "no-cache",
     }).then(function (response) {
