@@ -40,11 +40,11 @@ services:
    #network_mode: *default-netmode
    restart: always
    volumes:
-     - ./data/redis/7001/data:/data
+     - ./data/redis/6379/data:/data
    environment:
-     - REDIS_PORT=7001
+     - REDIS_PORT=6379
    ports:
-     - '7001:7001'
+     - '6379:6379'
      - '17001:17001'
 
   redis2:
@@ -52,11 +52,11 @@ services:
    #network_mode: *default-netmode
    restart: always
    volumes:
-   - ./data/redis/7002/data:/data
+   - ./data/redis/6380/data:/data
    environment:
-   - REDIS_PORT=7002
+   - REDIS_PORT=6380
    ports:
-     - '7002:7002'
+     - '6380:6380'
      - '17002:17002'
 
   redis3:
@@ -64,11 +64,11 @@ services:
    #network_mode: *default-netmode
    restart: always
    volumes:
-     - ./data/redis/7003/data:/data
+     - ./data/redis/6381/data:/data
    environment:
-     - REDIS_PORT=7003
+     - REDIS_PORT=6381
    ports:
-     - '7003:7003'
+     - '6381:6381'
      - '17003:17003'
 
   redis4:
@@ -76,11 +76,11 @@ services:
    #network_mode: *default-netmode
    restart: always
    volumes:
-     - ./data/redis/7004/data:/data
+     - ./data/redis/6382/data:/data
    environment:
-     - REDIS_PORT=7004
+     - REDIS_PORT=6382
    ports:
-     - '7004:7004'
+     - '6382:6382'
      - '17004:17004'
 
   redis5:
@@ -88,11 +88,11 @@ services:
    #network_mode: *default-netmode
    restart: always
    volumes:
-     - ./data/redis/7005/data:/data
+     - ./data/redis/6383/data:/data
    environment:
-     - REDIS_PORT=7005
+     - REDIS_PORT=6383
    ports:
-     - '7005:7005'
+     - '6383:6383'
      - '17005:17005'
 
   redis6:
@@ -100,11 +100,11 @@ services:
    #network_mode: *default-netmode
    restart: always
    volumes:
-     - ./data/redis/7006/data:/data
+     - ./data/redis/6384/data:/data
    environment:
-     - REDIS_PORT=7006
+     - REDIS_PORT=6384
    ports:
-     - '7006:7006'
+     - '6384:6384'
      - '17006:17006'
 
 
