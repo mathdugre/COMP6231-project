@@ -1,0 +1,112 @@
+version: "3.4"
+
+services:
+  auth:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile.prod
+    command: gunicorn --bind 0.0.0.0:5000 manage:app
+    ports:
+      - 5000:5000
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - user_db
+
+  user_db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.dev.db
+
+  web:
+    build:
+        context: ./services/web
+        dockerfile: Dockerfile.dev
+    command: python manage.py run -h 0.0.0.0
+    volumes:
+      - ./services/web/:/usr/src/app/
+    ports:
+      - 5005:5005
+    env_file:
+      - ./.env2.dev
+
+#  redis:
+#    image: "redis:alpine"
+
+  redis1:
+   image: publicisworldwide/redis-cluster
+   #network_mode: *default-netmode
+   restart: always
+   volumes:
+     - ./data/redis/7001/data:/data
+   environment:
+     - REDIS_PORT=7001
+   ports:
+     - '7001:7001'
+     - '17001:17001'
+
+  redis2:
+   image: publicisworldwide/redis-cluster
+   #network_mode: *default-netmode
+   restart: always
+   volumes:
+   - ./data/redis/7002/data:/data
+   environment:
+   - REDIS_PORT=7002
+   ports:
+     - '7002:7002'
+     - '17002:17002'
+
+  redis3:
+   image: publicisworldwide/redis-cluster
+   #network_mode: *default-netmode
+   restart: always
+   volumes:
+     - ./data/redis/7003/data:/data
+   environment:
+     - REDIS_PORT=7003
+   ports:
+     - '7003:7003'
+     - '17003:17003'
+
+  redis4:
+   image: publicisworldwide/redis-cluster
+   #network_mode: *default-netmode
+   restart: always
+   volumes:
+     - ./data/redis/7004/data:/data
+   environment:
+     - REDIS_PORT=7004
+   ports:
+     - '7004:7004'
+     - '17004:17004'
+
+  redis5:
+   image: publicisworldwide/redis-cluster
+   #network_mode: *default-netmode
+   restart: always
+   volumes:
+     - ./data/redis/7005/data:/data
+   environment:
+     - REDIS_PORT=7005
+   ports:
+     - '7005:7005'
+     - '17005:17005'
+
+  redis6:
+   image: publicisworldwide/redis-cluster
+   #network_mode: *default-netmode
+   restart: always
+   volumes:
+     - ./data/redis/7006/data:/data
+   environment:
+     - REDIS_PORT=7006
+   ports:
+     - '7006:7006'
+     - '17006:17006'
+
+
+volumes:
+  postgres_data:
