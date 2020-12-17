@@ -1,7 +1,27 @@
-function newPost() {
-
+function newPostView() {
     document.getElementById("postForm").classList.remove("d-none");
     document.getElementById("centerContent").innerHTML = "";
+}
+
+function newPost(){
+
+    let formData = new FormData();
+    formData.append('title', document.getElementById("title").value);
+    formData.append('message', document.getElementById("message").value);
+
+    fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'newpost', {
+        method: "POST",
+        body: formData,
+    }).then(function (response) {
+        if (response.status !== 200) {
+            console.log('Looks like there was a problem. Status code: ${response.status}');
+        }
+        return response.json();
+    }).then(function(json){
+        alert("post created: " + JSON.stringify(json));
+    }).catch(function (error) {
+        console.log("Fetch error: " + error);
+    });
 }
 
 function viewPosts() {
@@ -19,21 +39,21 @@ function viewPosts() {
             let time = new Date(0); // The 0 there is the key, which sets the date to the epoch
             time.setUTCSeconds(timeInSec);
 
-            html +=
-                '       <div class="list-group-item flex-column align-items-start">\n' +
-                '       <div class="d-flex w-100 justify-content-between">\n' +
-                '           <h5 class="mb-1">' + username + title + '</h5>\n' +
-                '           <small>45 points</small>\n' +
-                '       </div>\n' +
-                '       <div class="d-flex w-100 justify-content-between">\n' +
-                '           <p class="mb-1 w-75">' + message + '</p>\n' +
-                '           <div>' +
-                '               <div class="btn btn-success"> /\\ </div>' +
-                '               <div class="btn btn-danger"> \\/ </div>' +
-                '           </div>' +
-                '        </div>' +
-                '       <small> ' + time + '. Associated files</small>\n' +
-                '       </div>';
+            html +=`
+                       <div class="list-group-item flex-column align-items-start">
+                       <div class="d-flex w-100 justify-content-between">
+                           <h5 class="mb-1"> `+ username + title + `</h5>
+                           <small>45 points</small>
+                       </div> 
+                       <div class="d-flex w-100 justify-content-between"> 
+                           <p class="mb-1 w-75">` + message + `</p> 
+                           <div> 
+                               <div class="btn btn-success"> /\\ </div> 
+                               <div class="btn btn-danger"> \\/ </div> 
+                           </div> 
+                        </div> 
+                       <small> ` + time + `</small> 
+                       </div>`
 
         }
         html += '</div>';
