@@ -99,7 +99,7 @@ def create_user_front_end():
 
     requests.post('http://web:5005/addUser', json={"username": request.form["username"].lower()})
 
-    return jsonify({"msg": "User created!"}), 200
+    return jsonify({"msg": "User " + request.form["username"] + " created!"}), 200
 
 
 @user_blueprint.route("/user/<public_id>", methods=["DELETE"])

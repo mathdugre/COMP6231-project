@@ -34,14 +34,14 @@
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" name="password" class="form-control" id="password" placeholder="Password">
+                    <input type="password" name="password" class="form-control" id="password" placeholder="Enter password">
                 </div>
                 <div class="row ">
                     <div class="col-6">
                         <button type="submit" onclick="javascript: form.action='/auth/loginFrontEnd';"  class="btn btn-primary">Submit</button>
                     </div>
                     <div class="col-6  text-right">
-                        <button type="submit" onclick="javascript: form.action='/userFrontEnd';" class="btn btn-dark">Register</button>
+                        <button type="submit" onclick="register(); return false;" class="btn btn-dark">Register</button>
                     </div>
                 </div>
             </form>
