@@ -255,9 +255,8 @@ function viewFiles() {
                 '       <form action="http://localhost:5005/download" method="get">' +
                 '           <input type ="hidden" name="filename" value="' + fileName + '">' +
                 '           <button type="submit" class="btn btn-success">download</button>' +
-                '<button type="submit" formaction="http://localhost:5005/deletefile" class="btn btn-danger ml-1">delete</button>' +
+                '           <button type="submit" formaction="http://localhost:5005/deletefile" class="btn btn-danger ml-1">delete</button>' +
                 '       </form>' +
-
                 '   </div>' +
                 '</li>';
         }
@@ -267,7 +266,10 @@ function viewFiles() {
                 html +=
                     '<li class="list-group-item d-flex justify-content-between align-items-center">' + allFiles[i] + '' +
                     '<div>' +
-                    '   <button class="btn btn-success">download</button>' +
+                    '   <form action="http://localhost:5005/download" method="get">' +
+                    '       <input type ="hidden" name="filename" value="' + allFiles[i] + '">' +
+                    '       <button type="submit" class="btn btn-success">download</button>' +
+                    '   </form>' +
                     '</div>' +
                     '</li>';
             }
