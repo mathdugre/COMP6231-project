@@ -91,9 +91,9 @@ def refresh():
 
 @jwt_blueprint.route("/auth/logout", methods=["POST"])
 def logout():
-    resp = jsonify({"logout": True})
+    resp = make_response(redirect("http://localhost:5000", 301))
     unset_jwt_cookies(resp)
-    return resp, 200
+    return resp, 301
 
 
 @jwt_blueprint.route("/api/whoami", methods=["GET"])
