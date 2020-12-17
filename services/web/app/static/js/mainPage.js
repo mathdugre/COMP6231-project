@@ -227,14 +227,14 @@ function viewFiles() {
 
     var html =
         '<div class = "col-12 text-center mb-5"> ' +
-        '      <form action="http://localhost:5005/upload" method="POST" enctype="multipart/form-data">' +
+        '      <form action="" method="" enctype="">' +
         '        <div class="form-group">' +
         '          <div class="custom-file">' +
         '            <input type="file" class="custom-file-input" name="fileUpload" id="fileUpload">' +
         '            <label class="custom-file-label" for="fileUpload">Select file to upload...</label>' +
         '          </div>' +
         '        </div>' +
-        '        <button type="submit" class="btn btn-primary">Upload</button>' +
+        '        <button type="" onclick="uploadFile(); return false;" class="btn btn-primary">Upload</button>' +
         '      </form>' +
         '</div>' +
         '<ul class="list-group">';
@@ -296,6 +296,30 @@ function getFileNames() {
     }).catch(function (error) {
         console.log("Fetch error: " + error);
     });
+}
+
+function uploadFile(){
+
+    const file = document.getElementById('fileUpload').files[0];
+    let formData = new FormData();
+
+    formData.append('fileUpload', file)
+
+    fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'upload', {
+        method: "POST",
+        body: formData,
+    }).then(function (response) {
+        if (response.status !== 200) {
+            console.log('Looks like there was a problem. Status code: ${response.status}');
+        }
+        return response.json();
+    }).then(function (json){
+        alert(JSON.stringify(json));
+        viewFiles();
+    }).catch(function (error) {
+        console.log("Fetch error: " + error);
+    });
+
 }
 
 function downloadFile(fileName){
