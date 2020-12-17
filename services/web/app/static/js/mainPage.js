@@ -255,7 +255,7 @@ function viewFiles() {
                 '       <form action="http://localhost:5005/download" method="get">' +
                 '           <input type ="hidden" name="filename" value="' + fileName + '">' +
                 '           <button type="submit" class="btn btn-success">download</button>' +
-                           '<button type="submit" formaction="http://localhost:5005/deletefile" class="btn btn-danger ml-1">delete</button>' +
+                           '<button onclick="deleteFile(\''+ fileName + '\')" class="btn btn-danger ml-1">delete</button>' +
                 '       </form>' +
                 '   </div>' +
                 '</li>';
@@ -324,6 +324,24 @@ function uploadFile() {
         console.log("Fetch error: " + error);
     });
 
+}
+
+function deleteFile(fileName){
+
+    return fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'deletefile?filename=' + fileName, {
+        method: "GET",
+        cache: "no-cache",
+    }).then(function (response) {
+        if (response.status !== 200) {
+            console.log('Looks like there was a problem. Status code: ${response.status}');
+        }
+        return response.json();
+    }).then(function (json){
+        alert(JSON.stringify(json));
+        viewFiles();
+    }).catch(function (error) {
+        console.log("Fetch error: " + error);
+    });
 }
 
 function downloadFile(fileName) {
