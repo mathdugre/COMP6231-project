@@ -34,6 +34,8 @@ redis_curr_post_key = "currPost"
 redis_list_user_posts = ":posts"
 # list of post information, e.g. post:10
 redis_list_post = "post:"
+# hashset posts user has voted on. userID:votes is name. key => postID, value => 1, 0, -1
+redis_hset_postVotes = ":votes"
 # list of file information: user_uploader, data
 redis_list_file = "file:"
 # set of user files
@@ -51,6 +53,13 @@ def decodeRedisResp(response):
     for resp in response:
         respList.append(resp.decode())
     return respList
+
+
+def decodeRedisRespHash(response):
+    respDict = dict()
+    for key in response:
+        respDict[key.decode()] = response[key].decode()
+    return respDict
 
 
 # TODO: there should be a secret key necessary to add a user
@@ -155,6 +164,7 @@ def newPost():
     topic = request.form['title']
     message = request.form['message']
     currtime = time.time()
+    postScore = 0
 
     if topic == "" or message == "":
         return jsonify({"msg": "blank fields, invalid"}), 400
@@ -168,7 +178,7 @@ def newPost():
 
     # push post to user
     redis_client.lpush(username + redis_list_user_posts, postID)
-    redis_client.lpush(redis_list_post + str(postID), username, topic, message, currtime)
+    redis_client.lpush(redis_list_post + str(postID), postID, postScore, username, topic, message, currtime)
 
     # push post to followers
     followers = redis_client.smembers(username + redis_set_user_followers)
@@ -197,6 +207,48 @@ def getPosts():
     return jsonify(posts), 200
 
 
+@redis_commands_blueprint.route("/vote", methods=["POST"])
+@jwt_required
+def voteOnPost():
+    username = get_jwt_identity()['username']
+    postID = int(request.form['postID'])
+    vote = request.form['vote']
+
+    if int(redis_client.get(redis_curr_post_key)) <= postID:
+        return jsonify({"msg": "error, post does not exist"}), 404
+
+    old_user_score = redis_client.hget(username + redis_hset_postVotes, postID)
+    curr_total_score = int(redis_client.lindex(redis_list_post + str(postID), 4))
+    new_user_score = None
+
+    if old_user_score is None:
+        old_user_score = 0
+    old_user_score = int(old_user_score)
+
+    if vote == 'upvote':
+        new_user_score = min(old_user_score + 1, 1)
+    if vote == 'downvote':
+        new_user_score = max(old_user_score - 1, -1)
+
+    difference = new_user_score - old_user_score
+    curr_total_score = curr_total_score + difference
+
+    redis_client.hset(username + redis_hset_postVotes, str(postID), new_user_score)
+    redis_client.lset(redis_list_post + str(postID), 4, curr_total_score)
+
+    return jsonify({"msg": "voted, score now " + str(old_user_score)}), 200
+
+
+@redis_commands_blueprint.route("/getuservotes", methods=["GET"])
+@jwt_required
+def getUserVotes():
+    username = get_jwt_identity()['username']
+
+    user_votes = decodeRedisRespHash(redis_client.hgetall(username + redis_hset_postVotes))
+
+    return jsonify(user_votes), 200
+
+
 @redis_commands_blueprint.route("/upload", methods=["POST"])
 @jwt_required
 def upload():
@@ -213,7 +265,7 @@ def upload():
 
     redis_client.lpush(redis_list_file + file_name, data, username)
     redis_client.sadd(redis_set_files, file_name)
-    redis_client.sadd(username+redis_set_user_files, file_name)
+    redis_client.sadd(username + redis_set_user_files, file_name)
 
     return jsonify({"msg": "uploaded " + file_name + " successfully"}), 200
 
@@ -253,14 +305,13 @@ def deleteFile():
     if not redis_client.sismember(redis_set_files, file_name):
         return jsonify({"msg": "file does not exist"}), 400
 
-    file_owner = redis_client.lindex(redis_list_file+file_name, 0).decode()
+    file_owner = redis_client.lindex(redis_list_file + file_name, 0).decode()
 
     if username != file_owner:
         return jsonify({"msg": "file does not belong to user"}), 400
 
     redis_client.delete(redis_list_file + file_name)
-    redis_client.srem(username+redis_set_user_files, file_name)
+    redis_client.srem(username + redis_set_user_files, file_name)
     redis_client.srem(redis_set_files, file_name)
 
     return jsonify({"msg": file_name + " deleted"}), 200
-

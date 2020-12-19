@@ -30,26 +30,28 @@ function viewPosts() {
     posts.then(function (userposts) {
         let numPosts = userposts.length
         let html = '<div class="list-group">';
-        for (let i = 0; i < numPosts; i = i + 4) {
+        for (let i = 0; i < numPosts; i = i + 6) {
 
             let username = "@" + userposts[i + 3] + ": ";
             let message = userposts[i + 1];
             let title = userposts[i + 2];
             let timeInSec = userposts[i];
             let time = new Date(0); // The 0 there is the key, which sets the date to the epoch
+            let postScore = userposts[i + 4]
+            let postID = userposts[i + 5];
             time.setUTCSeconds(timeInSec);
 
             html += `
                        <div class="list-group-item flex-column align-items-start">
                        <div class="d-flex w-100 justify-content-between">
                            <h5 class="mb-1"> ` + username + title + `</h5>
-                           <small>45 points</small>
+                           <b id="postscorewithID`+ postID +`">`+ postScore + ` points</b>
                        </div> 
                        <div class="d-flex w-100 justify-content-between"> 
                            <p class="mb-1 w-75">` + message + `</p> 
                            <div> 
-                               <div class="btn btn-success"> /\\ </div> 
-                               <div class="btn btn-danger"> \\/ </div> 
+                               <div class="btn btn-success" onclick="vote('upvote','`+postID+`'); return false;"> /\\ </div> 
+                               <div class="btn btn-danger" onclick="vote('downvote','`+postID+`'); return false" > \\/ </div> 
                            </div> 
                         </div> 
                        <small> ` + time + `</small> 
@@ -60,6 +62,76 @@ function viewPosts() {
         document.getElementById('centerContent').innerHTML = html;
         document.getElementById("postForm").classList.add("d-none");
 
+        setPostScoreColors();
+    });
+}
+
+function vote(upOrDown, postID) {
+
+    let formData = new FormData();
+
+    formData.append("postID", postID);
+    formData.append("vote", upOrDown);
+
+    fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'vote', {
+        method: "POST",
+        body: formData,
+    }).then(function (response) {
+        if (response.status !== 200) {
+            console.log('Looks like there was a problem. Status code: ${response.status}');
+            return;
+        }
+        viewPosts();
+    }).catch(function (error) {
+        console.log("Fetch error: " + error);
+    });
+
+}
+
+function setPostScoreColors() {
+
+    getUserPostScores().then(function(scores){
+
+        for(let postID in scores){
+
+            if(scores.hasOwnProperty(postID)) {
+
+                let domID = "postscorewithID" + postID;
+
+                if (scores[postID] === '1') {
+
+                    document.getElementById(domID).style.color = "green";
+
+                } else if (scores[postID] === '0') {
+
+                    document.getElementById(domID).style.color = "black";
+
+                } else if (scores[postID] === '-1') {
+
+                    document.getElementById(domID).style.color = "red";
+
+                }
+            }
+        }
+    })
+}
+
+function getUserPostScores() {
+
+    return fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'getuservotes', {
+        method: "GET",
+        cache: "no-cache",
+        headers: new Headers({
+            "content-type": "application/json"
+        })
+    }).then(function (response) {
+        if (response.status !== 200) {
+            console.log('Looks like there was a problem. Status code: ${response.status}');
+            return;
+        }
+        return response.json();
+    }).catch(function (error) {
+        console.log("Fetch error: " + error);
     });
 }
 
