@@ -1,3 +1,4 @@
 Flask
 flask_jwt_extended
 redis
+gunicorn

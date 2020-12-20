@@ -24,7 +24,7 @@ services:
     build:
       context: ./services/web
       dockerfile: Dockerfile.dev
-    command: python manage.py run -h 0.0.0.0
+    command: gunicorn --bind 0.0.0.0:5005 manage:app
     volumes:
       - ./services/web/:/usr/src/app/
       - ./CVPR2019:/dataset
