@@ -66,7 +66,7 @@ def decodeRedisRespHash(response):
 @redis_commands_blueprint.route("/addUser", methods=["POST"])
 def addUser():
     data = request.get_json()
-    username = data['username']
+    username = data["username"]
 
     if redis_client.sismember(redis_set_users, username):
         return jsonify({"msg:": "user already exists"}), 409
@@ -80,9 +80,9 @@ def addUser():
 @jwt_required
 def follow():
     data = request.get_json()
-    user_request = data['requester']
-    user_follow = data['tofollow']
-    jwt_username = get_jwt_identity()['username']
+    user_request = data["requester"]
+    user_follow = data["tofollow"]
+    jwt_username = get_jwt_identity()["username"]
 
     if not (userExists(user_follow) and userExists(user_request)):
         return jsonify({"msg:": "invalid, user(s) do not exist"}), 404
@@ -96,16 +96,23 @@ def follow():
     if follow_user(user_request, user_follow):
         return jsonify({"msg": user_request + " now follows " + user_follow}), 200
     else:
-        return jsonify({"msg": "unable to complete request. Either user already follows or internal error"}), 403
+        return (
+            jsonify(
+                {
+                    "msg": "unable to complete request. Either user already follows or internal error"
+                }
+            ),
+            403,
+        )
 
 
 @redis_commands_blueprint.route("/unfollow", methods=["POST"])
 @jwt_required
 def unfollow():
     data = request.get_json()
-    user_request = data['requester']
-    user_unfollow = data['tounfollow']
-    jwt_username = get_jwt_identity()['username']
+    user_request = data["requester"]
+    user_unfollow = data["tounfollow"]
+    jwt_username = get_jwt_identity()["username"]
 
     if not (userExists(user_unfollow) and userExists(user_request)):
         return jsonify({"msg:": "invalid, user(s) do not exist"}), 404
@@ -119,30 +126,45 @@ def unfollow():
     if unfollow_user(user_request, user_unfollow):
         return jsonify({"msg": user_request + " now unfollows " + user_unfollow}), 200
     else:
-        return jsonify(
-            {"msg": "unable to complete request. Either user already does not follow or internal error"}), 403
+        return (
+            jsonify(
+                {
+                    "msg": "unable to complete request. Either user already does not follow or internal error"
+                }
+            ),
+            403,
+        )
 
 
 def follow_user(user_request, user_follow):
-    return redis_client.sadd(user_request + redis_set_user_follows, user_follow)
+    return (
+        redis_client.sadd(user_request + redis_set_user_follows, user_follow)
+        and redis_client.sadd(user_follow + redis_set_user_followers, user_request) == 1
+    )
 
 
 def unfollow_user(user_request, user_unfollow):
-    return redis_client.srem(user_request + redis_set_user_follows, user_unfollow)
+    return (
+        redis_client.srem(user_request + redis_set_user_follows, user_unfollow)
+        and redis_client.srem(user_unfollow + redis_set_user_followers, user_request)
+        == 1
+    )
 
 
 @redis_commands_blueprint.route("/getallusers", methods=["GET"])
 @jwt_required
 def getAllUsers():
     userList = redis_client.smembers(redis_set_users)
-    return jsonify(users=decodeRedisResp(userList), username=get_jwt_identity()['username'])
+    return jsonify(
+        users=decodeRedisResp(userList), username=get_jwt_identity()["username"]
+    )
 
 
 @redis_commands_blueprint.route("/getwhouserfollows", methods=["GET"])
 @jwt_required
 def getWhoUserFollows():
-    username = request.args.get('username')
-    jwt_username = get_jwt_identity()['username']
+    username = request.args.get("username")
+    jwt_username = get_jwt_identity()["username"]
 
     if not userExists(username):
         return jsonify({"msg:": "invalid, user does not exist"}), 404
@@ -156,9 +178,9 @@ def getWhoUserFollows():
 @redis_commands_blueprint.route("/newpost", methods=["POST"])
 @jwt_required
 def newPost():
-    username = get_jwt_identity()['username']
-    topic = request.form['title']
-    message = request.form['message']
+    username = get_jwt_identity()["username"]
+    topic = request.form["title"]
+    message = request.form["message"]
     currtime = time.time()
     postScore = 0
 
@@ -174,7 +196,15 @@ def newPost():
 
     # push post to user
     redis_client.lpush(username + redis_list_user_posts, postID)
-    redis_client.lpush(redis_list_post + str(postID), postID, postScore, username, topic, message, currtime)
+    redis_client.lpush(
+        redis_list_post + str(postID),
+        postID,
+        postScore,
+        username,
+        topic,
+        message,
+        currtime,
+    )
 
     # push post to followers
     followers = redis_client.smembers(username + redis_set_user_followers)
@@ -182,14 +212,24 @@ def newPost():
     for follower in followers:
         redis_client.lpush(follower + redis_list_user_posts, postID)
 
-    return jsonify({"msg": "post created", "username:": username, "topic": topic,
-                    "message": message, "time": currtime}), 200
+    return (
+        jsonify(
+            {
+                "msg": "post created",
+                "username:": username,
+                "topic": topic,
+                "message": message,
+                "time": currtime,
+            }
+        ),
+        200,
+    )
 
 
 @redis_commands_blueprint.route("/getposts", methods=["GET"])
 @jwt_required
 def getPosts():
-    username = get_jwt_identity()['username']
+    username = get_jwt_identity()["username"]
     post_Ids = redis_client.lrange(username + redis_list_user_posts, 0, -1)
     post_Ids = decodeRedisResp(post_Ids)
     posts = []
@@ -206,9 +246,9 @@ def getPosts():
 @redis_commands_blueprint.route("/vote", methods=["POST"])
 @jwt_required
 def voteOnPost():
-    username = get_jwt_identity()['username']
-    postID = int(request.form['postID'])
-    vote = request.form['vote']
+    username = get_jwt_identity()["username"]
+    postID = int(request.form["postID"])
+    vote = request.form["vote"]
 
     if int(redis_client.get(redis_curr_post_key)) <= postID:
         return jsonify({"msg": "error, post does not exist"}), 404
@@ -221,9 +261,9 @@ def voteOnPost():
         old_user_score = 0
     old_user_score = int(old_user_score)
 
-    if vote == 'upvote':
+    if vote == "upvote":
         new_user_score = min(old_user_score + 1, 1)
-    if vote == 'downvote':
+    if vote == "downvote":
         new_user_score = max(old_user_score - 1, -1)
 
     difference = new_user_score - old_user_score
@@ -238,9 +278,11 @@ def voteOnPost():
 @redis_commands_blueprint.route("/getuservotes", methods=["GET"])
 @jwt_required
 def getUserVotes():
-    username = get_jwt_identity()['username']
+    username = get_jwt_identity()["username"]
 
-    user_votes = decodeRedisRespHash(redis_client.hgetall(username + redis_hset_postVotes))
+    user_votes = decodeRedisRespHash(
+        redis_client.hgetall(username + redis_hset_postVotes)
+    )
 
     return jsonify(user_votes), 200
 
@@ -248,10 +290,10 @@ def getUserVotes():
 @redis_commands_blueprint.route("/upload", methods=["POST"])
 @jwt_required
 def upload():
-    file = request.files['fileUpload']
+    file = request.files["fileUpload"]
     data = file.read()
     file_name = file.filename
-    username = get_jwt_identity()['username']
+    username = get_jwt_identity()["username"]
 
     if file_name == "":
         return jsonify({"msg": "file name is empty"}), 400
@@ -269,7 +311,7 @@ def upload():
 @redis_commands_blueprint.route("/getfilenames", methods=["GET"])
 @jwt_required
 def getfiles():
-    username = get_jwt_identity()['username']
+    username = get_jwt_identity()["username"]
 
     file_names = redis_client.smembers(redis_set_files)
     user_files = redis_client.smembers(username + redis_set_user_files)
@@ -282,21 +324,26 @@ def getfiles():
 @redis_commands_blueprint.route("/download", methods=["GET"])
 @jwt_required
 def download():
-    file_name = request.args.get('filename')
+    file_name = request.args.get("filename")
 
     if not redis_client.sismember(redis_set_files, file_name):
         return jsonify({"msg": "file does not exist"}), 400
 
     file_data = redis_client.lindex(redis_list_file + file_name, 1)
 
-    return send_file(BytesIO(file_data), attachment_filename=file_name, as_attachment=True), 200
+    return (
+        send_file(
+            BytesIO(file_data), attachment_filename=file_name, as_attachment=True
+        ),
+        200,
+    )
 
 
 @redis_commands_blueprint.route("/deletefile", methods=["GET"])
 @jwt_required
 def deleteFile():
-    file_name = request.args.get('filename')
-    username = get_jwt_identity()['username']
+    file_name = request.args.get("filename")
+    username = get_jwt_identity()["username"]
 
     if not redis_client.sismember(redis_set_files, file_name):
         return jsonify({"msg": "file does not exist"}), 400

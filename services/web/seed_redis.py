@@ -52,7 +52,11 @@ for user_id, user in users.items():
         list(usernames - {username}), random.randint(0, max_followers)
     )
     for follower in followers:
-        r.sadd(f"{follower}:follows", username)
+        try:
+            r.sadd(f"{follower}:follows", username)
+            r.sadd(f"{username}:followers", follower)
+        except:
+            pass
 
     for paper in user["papers"]:
         post_id = paper["post_id"]
