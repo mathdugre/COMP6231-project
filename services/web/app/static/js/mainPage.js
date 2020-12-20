@@ -316,7 +316,7 @@ function viewFiles() {
     filenames.then(function (files) {
         let allFiles = files['allFiles'];
         let userFiles = new Set(files['userFiles']);
-
+        let baseURL = window.location.href.substr(0, window.location.href.indexOf('#'));
         for (let fileName of userFiles) {
             html +=
                 '<li class="list-group-item d-flex justify-content-between align-items-center">' +
@@ -324,7 +324,7 @@ function viewFiles() {
                 fileName + '' +
                 '   </div>' +
                 '   <div>' +
-                '       <form action="http://localhost:5005/download" method="get">' +
+                '       <form action="'+ baseURL +'download" method="get">' +
                 '           <input type ="hidden" name="filename" value="' + fileName + '">' +
                 '           <button type="submit" class="btn btn-success">download</button>' +
                            '<button onclick="deleteFile(\''+ fileName + '\')" class="btn btn-danger ml-1">delete</button>' +
@@ -338,7 +338,7 @@ function viewFiles() {
                 html +=
                     '<li class="list-group-item d-flex justify-content-between align-items-center">' + allFiles[i] + '' +
                     '<div>' +
-                    '   <form action="http://localhost:5005/download" method="get">' +
+                    '       <form action="'+ baseURL +'download" method="get">' +
                     '       <input type ="hidden" name="filename" value="' + allFiles[i] + '">' +
                     '       <button type="submit" class="btn btn-success">download</button>' +
                     '   </form>' +
