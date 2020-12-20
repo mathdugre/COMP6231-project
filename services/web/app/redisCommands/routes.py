@@ -124,15 +124,11 @@ def unfollow():
 
 
 def follow_user(user_request, user_follow):
-    return (
-            redis_client.sadd(user_request + redis_set_user_follows, user_follow) and
-            redis_client.sadd(user_follow + redis_set_user_followers, user_request) == 1)
+    return redis_client.sadd(user_request + redis_set_user_follows, user_follow)
 
 
 def unfollow_user(user_request, user_unfollow):
-    return (
-            redis_client.srem(user_request + redis_set_user_follows, user_unfollow) and
-            redis_client.srem(user_unfollow + redis_set_user_followers, user_request) == 1)
+    return redis_client.srem(user_request + redis_set_user_follows, user_unfollow)
 
 
 @redis_commands_blueprint.route("/getallusers", methods=["GET"])
