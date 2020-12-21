@@ -327,7 +327,7 @@ function viewFiles() {
                 '       <form action="' + baseURL + 'download" method="get">' +
                 '           <input type ="hidden" name="filename" value="' + fileName + '">' +
                 '           <button type="submit" class="btn btn-success">download</button>' +
-                '<button onclick="deleteFile(\'' + fileName + '\')" class="btn btn-danger ml-1">delete</button>' +
+                '<button type="button" onclick="deleteFile(\'' + fileName + '\')" class="btn btn-danger ml-1">delete</button>' +
                 '       </form>' +
                 '   </div>' +
                 '</li>';
