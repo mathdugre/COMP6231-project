@@ -13,7 +13,7 @@ abstracts = os.listdir(f"/dataset/abstracts")
 papers = defaultdict(dict)
 
 post_id = 1
-for pdf in pdfs[:100]:
+for pdf in pdfs:
     slug = pdf[:-4]
     papers[slug]["title"] = slug.replace("_CVPR_2019_paper", "").replace("_", " ")
     papers[slug]["pdf"] = pdf
@@ -40,7 +40,7 @@ for k, v in papers.items():
 
 r.flushdb()
 r.set("currPost", len(papers) + 1)
-max_followers = int(len(usernames) * 0.1)
+max_followers = int(len(usernames) * 0.4)
 
 for k, v in users.items():
     r.sadd("users", v["username"])
