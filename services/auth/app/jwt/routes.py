@@ -69,7 +69,10 @@ def loginFrontEnd():
         access_token = create_access_token(identity=identity)
         refresh_token = create_refresh_token(identity=identity)
 
-        resp = make_response(redirect("http://localhost:5005", 301))
+        url_root = request.url_root.split(':')
+        url_redir = url_root[0] + ':' + url_root[1] + ':' + str(5005)
+
+        resp = make_response(redirect(url_redir, 301))
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
         return resp
@@ -91,7 +94,11 @@ def refresh():
 
 @jwt_blueprint.route("/auth/logout", methods=["POST"])
 def logout():
-    resp = make_response(redirect("http://localhost:5000", 301))
+
+    url_root = request.url_root.split(':')
+    url_redir = url_root[0] + ':' + url_root[1] + ':' + str(5000)
+
+    resp = make_response(redirect(url_redir, 301))
     unset_jwt_cookies(resp)
     return resp, 301
 

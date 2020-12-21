@@ -45,13 +45,13 @@ function viewPosts() {
                        <div class="list-group-item flex-column align-items-start">
                        <div class="d-flex w-100 justify-content-between">
                            <h5 class="mb-1"> ` + username + title + `</h5>
-                           <b id="postscorewithID`+ postID +`">`+ postScore + ` points</b>
+                           <b class="w-25 text-right" id="postscorewithID` + postID + `">` + postScore + ` points</b>
                        </div> 
                        <div class="d-flex w-100 justify-content-between"> 
                            <p class="mb-1 w-75">` + message + `</p> 
                            <div> 
-                               <div class="btn btn-success" onclick="vote('upvote','`+postID+`'); return false;"> /\\ </div> 
-                               <div class="btn btn-danger" onclick="vote('downvote','`+postID+`'); return false" > \\/ </div> 
+                               <div class="btn btn-success" onclick="vote('upvote','` + postID + `'); return false;"> /\\ </div> 
+                               <div class="btn btn-danger" onclick="vote('downvote','` + postID + `'); return false" > \\/ </div> 
                            </div> 
                         </div> 
                        <small> ` + time + `</small> 
@@ -90,11 +90,11 @@ function vote(upOrDown, postID) {
 
 function setPostScoreColors() {
 
-    getUserPostScores().then(function(scores){
+    getUserPostScores().then(function (scores) {
 
-        for(let postID in scores){
+        for (let postID in scores) {
 
-            if(scores.hasOwnProperty(postID)) {
+            if (scores.hasOwnProperty(postID)) {
 
                 let domID = "postscorewithID" + postID;
 
@@ -172,11 +172,11 @@ function generateViewUsersHTML(users, theUser, whoUserFollows) {
 
     for (let user of whoUserFollows) {
 
-            html +=
-                '   <li class="list-group-item d-flex justify-content-between align-items-center">\n' +
-                '       @' + user + '\n' +
-                '       <button onclick="changeSubButton(this,\'' + theUser + "\',\'" + user + '\')" class ="btn btn-danger">Unsubscribe</button>\n' +
-                '   </li>';
+        html +=
+            '   <li class="list-group-item d-flex justify-content-between align-items-center">\n' +
+            '       @' + user + '\n' +
+            '       <button onclick="changeSubButton(this,\'' + theUser + "\',\'" + user + '\')" class ="btn btn-danger">Unsubscribe</button>\n' +
+            '   </li>';
     }
 
     for (let user of users) {
@@ -316,18 +316,18 @@ function viewFiles() {
     filenames.then(function (files) {
         let allFiles = files['allFiles'];
         let userFiles = new Set(files['userFiles']);
-
+        let baseURL = window.location.href.substr(0, window.location.href.indexOf('#'));
         for (let fileName of userFiles) {
             html +=
                 '<li class="list-group-item d-flex justify-content-between align-items-center">' +
-                '   <div class = "w-75">' +
+                '   <div class = "w-75 text-truncate">' +
                 fileName + '' +
                 '   </div>' +
                 '   <div>' +
-                '       <form action="http://localhost:5005/download" method="get">' +
+                '       <form action="' + baseURL + 'download" method="get">' +
                 '           <input type ="hidden" name="filename" value="' + fileName + '">' +
                 '           <button type="submit" class="btn btn-success">download</button>' +
-                           '<button onclick="deleteFile(\''+ fileName + '\')" class="btn btn-danger ml-1">delete</button>' +
+                '<button onclick="deleteFile(\'' + fileName + '\')" class="btn btn-danger ml-1">delete</button>' +
                 '       </form>' +
                 '   </div>' +
                 '</li>';
@@ -336,9 +336,12 @@ function viewFiles() {
         for (let i = 0; i < allFiles.length; i++) {
             if (!userFiles.has(allFiles[i])) {
                 html +=
-                    '<li class="list-group-item d-flex justify-content-between align-items-center">' + allFiles[i] + '' +
+                    '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+                    '   <div class = "w-75 text-truncate">' +
+                            allFiles[i] + '' +
+                    '   </div>' +
                     '<div>' +
-                    '   <form action="http://localhost:5005/download" method="get">' +
+                    '       <form action="' + baseURL + 'download" method="get">' +
                     '       <input type ="hidden" name="filename" value="' + allFiles[i] + '">' +
                     '       <button type="submit" class="btn btn-success">download</button>' +
                     '   </form>' +
@@ -398,7 +401,7 @@ function uploadFile() {
 
 }
 
-function deleteFile(fileName){
+function deleteFile(fileName) {
 
     return fetch(window.location.href.substr(0, window.location.href.indexOf('#')) + 'deletefile?filename=' + fileName, {
         method: "GET",
@@ -408,7 +411,7 @@ function deleteFile(fileName){
             console.log('Looks like there was a problem. Status code: ${response.status}');
         }
         return response.json();
-    }).then(function (json){
+    }).then(function (json) {
         alert(JSON.stringify(json));
         viewFiles();
     }).catch(function (error) {

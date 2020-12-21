@@ -45,7 +45,7 @@
                 <div class="nav-link">Welcome @{{user_display_name}}</div>
             </li>
             <li class="nav-item">
-                <form method="post" action="http://localhost:5000/auth/logout" class="inline">
+                <form method="post" action="{{base_url}}:5000/auth/logout" class="inline">
                     <input type="hidden" name="extra_submit_param" value="extra_submit_value">
                     <button type="submit" name="submit_param" value="submit_value" class="btn btn-outline-danger">
                         Logout
