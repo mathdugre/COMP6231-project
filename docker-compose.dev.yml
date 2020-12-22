@@ -5,7 +5,7 @@ services:
     build:
       context: ./services/auth
       dockerfile: Dockerfile.prod
-    command: gunicorn --workers=9 --threads=2 --bind 0.0.0.0:5000 manage:app
+    command: gunicorn --workers=3  --bind 0.0.0.0:5000 manage:app
     ports:
       - 5000:5000
     env_file:
@@ -24,7 +24,7 @@ services:
     build:
       context: ./services/web
       dockerfile: Dockerfile.dev
-    command: gunicorn --workers=9 --threads=2 --bind 0.0.0.0:5005 manage:app
+    command: gunicorn --workers=3 --bind 0.0.0.0:5005 manage:app
     volumes:
       - ./services/web/:/usr/src/app/
       - ./CVPR2019:/dataset
