@@ -52,7 +52,7 @@ def login():
 
 @jwt_blueprint.route("/auth/loginFrontEnd", methods=["POST"])
 def loginFrontEnd():
-    username = request.form['username']
+    username = request.form['username'].lower()
     password = request.form['password']
 
     user = User.query.filter_by(username=username).first()
